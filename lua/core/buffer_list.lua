@@ -26,7 +26,7 @@ M.show = function()
 		return t.is_current
 	end)
 	local row = math.floor(vim.o.lines - buffer_list.height - 3)
-	local col = math.floor(vim.o.columns - buffer_list.width - 2)
+	local col = math.floor(vim.o.columns - buffer_list.width - 3)
 
 	---@type vim.api.keyset.win_config
 	local win_config = {
