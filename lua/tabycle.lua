@@ -56,6 +56,7 @@ M.setup = function()
 
 	vim.schedule(function()
 		M.show_summary()
+		M.show_list()
 	end)
 end
 
