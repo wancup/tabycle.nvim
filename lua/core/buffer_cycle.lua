@@ -155,22 +155,29 @@ local function find_target_buf(tab_list, direction)
 end
 
 ---@param direction "prev" | "next"
-local function cycle_buffer(direction)
+---@param immediately boolean
+local function cycle_buffer(direction, immediately)
 	if store.cycle_list_win == nil then
 		working_win = vim.api.nvim_get_current_win()
 	end
 	local tab_list = tab.get_recency_list()
 	local target_buf = find_target_buf(tab_list, direction)
-	show_preview(tab_list, target_buf)
-	current_buf = target_buf
+	if immediately == true then
+		open_buf(target_buf)
+	else
+		show_preview(tab_list, target_buf)
+		current_buf = target_buf
+	end
 end
 
-M.cycle_back = function()
-	cycle_buffer("prev")
+---@param immediately boolean
+M.cycle_back = function(immediately)
+	cycle_buffer("prev", immediately)
 end
 
-M.cycle_forward = function()
-	cycle_buffer("next")
+---@param immediately boolean
+M.cycle_forward = function(immediately)
+	cycle_buffer("next", immediately)
 end
 
 M.close = function()

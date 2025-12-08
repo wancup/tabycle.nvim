@@ -35,11 +35,19 @@ M.toggle_list = function()
 end
 
 M.cycle_buffer_back = function()
-	buffer_cycle.cycle_back()
+	buffer_cycle.cycle_back(false)
 end
 
 M.cycle_buffer_forward = function()
-	buffer_cycle.cycle_forward()
+	buffer_cycle.cycle_forward(false)
+end
+
+M.pick_prev_buffer = function()
+	buffer_cycle.cycle_back(true)
+end
+
+M.pick_next_buffer = function()
+	buffer_cycle.cycle_forward(true)
 end
 
 M.setup = function()
