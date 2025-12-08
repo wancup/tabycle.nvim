@@ -136,7 +136,7 @@ local function find_target_buf(tab_list, direction)
 	local base_buf = current_buf ~= nil and current_buf or vim.api.nvim_get_current_buf()
 	local index = find_buf_index(tab_list, base_buf)
 	if index == nil then
-		return base_buf
+		return tab_list[1].bufnr
 	end
 
 	if direction == "prev" then
