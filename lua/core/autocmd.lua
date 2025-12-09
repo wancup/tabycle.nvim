@@ -9,7 +9,6 @@ local M = {}
 local augroup = vim.api.nvim_create_augroup("Tabycle", { clear = true })
 
 local sync_ui = debounce.debounce(function()
-	tab.clear_cache()
 	buffer_summary.sync()
 	buffer_list.sync()
 end, 100)

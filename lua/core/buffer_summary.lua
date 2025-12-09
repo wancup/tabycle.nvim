@@ -22,17 +22,25 @@ local function cursor_icon(is_current, cursor, width)
 	end
 end
 
-M.sync = function()
+---@param tab_list TabItem[] | nil
+---@return TabItem[] | nil
+M.sync = function(tab_list)
 	if enabled == true then
-		M.show()
+		return M.show(tab_list)
 	end
+	return nil
 end
 
-M.show = function()
+---@param tab_list TabItem[] | nil
+---@return TabItem[] | nil
+M.show = function(tab_list)
 	enabled = true
+	if tab_list ~= nil and #tab_list == 0 then
+		return
+	end
 
-	local tab_list = tab.get_list()
-	if #tab_list == 0 then
+	local list = tab_list ~= nil and tab_list or tab.get_list()
+	if #list == 0 then
 		return
 	end
 
@@ -41,7 +49,7 @@ M.show = function()
 
 	local sign_col_index = 0
 	local cursor_col_index = 0
-	for _, t in ipairs(tab_list) do
+	for _, t in ipairs(list) do
 		local mark = t.modified and { summary_icon = "*", hi_group = "Question" } or t.diagnostic
 		-- Sign Line
 		local icon_len = #mark.summary_icon
@@ -78,6 +86,8 @@ M.show = function()
 	else
 		store.buffer_summary_win = vim.api.nvim_open_win(buf, false, win_config)
 	end
+
+	return list
 end
 
 M.close = function()

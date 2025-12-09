@@ -8,21 +8,29 @@ local M = {}
 ---@type boolean
 local enabled = false
 
-M.sync = function()
+---@param tab_list TabItem[] | nil
+---@return TabItem[] | nil
+M.sync = function(tab_list)
 	if enabled == true then
-		M.show()
+		return M.show(tab_list)
 	end
+	return nil
 end
 
-M.show = function()
+---@param tab_list TabItem[] | nil
+---@return TabItem[] | nil
+M.show = function(tab_list)
 	enabled = true
-
-	local tab_list = tab.get_list()
-	if #tab_list == 0 then
+	if tab_list ~= nil and #tab_list == 0 then
 		return
 	end
 
-	local buffer_list = buf.make_buffer_list(tab_list, function(t)
+	local list = tab_list ~= nil and tab_list or tab.get_list()
+	if #list == 0 then
+		return nil
+	end
+
+	local buffer_list = buf.make_buffer_list(list, function(t)
 		return t.is_current
 	end)
 	local row = math.floor(vim.o.lines - buffer_list.height - 3)
@@ -44,6 +52,7 @@ M.show = function()
 	else
 		store.buffer_list_win = vim.api.nvim_open_win(buffer_list.bufnr, false, win_config)
 	end
+	return list
 end
 
 M.close = function()

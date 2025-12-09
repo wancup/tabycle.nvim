@@ -18,12 +18,6 @@ local M = {}
 
 local max_history = 2
 
----@type TabItem[] | nil
-local cache = nil
-
----@type TabItem[] | nil
-local sorted_cache = nil
-
 ---@type integer[]
 local history = {}
 
@@ -123,10 +117,6 @@ end
 
 ---@return TabItem[]
 M.get_list = function()
-	if cache ~= nil then
-		return cache
-	end
-
 	---@type TabItem[]
 	local tab_list = {}
 
@@ -155,26 +145,15 @@ M.get_list = function()
 		::continue::
 	end
 
-	cache = tab_list
 	return tab_list
 end
 
 ---@return TabItem[]
 M.get_recency_list = function()
-	if sorted_cache ~= nil then
-		return sorted_cache
-	else
-		local _list = M.get_list()
-		local tab_list = vim.deepcopy(_list)
-		sort_by_recency(tab_list)
-		sorted_cache = tab_list
-		return tab_list
-	end
-end
-
-M.clear_cache = function()
-	cache = nil
-	sorted_cache = nil
+	local _list = M.get_list()
+	local tab_list = vim.deepcopy(_list)
+	sort_by_recency(tab_list)
+	return tab_list
 end
 
 return M
