@@ -10,14 +10,14 @@ M.debounce = function(fn, ms)
 		local args = { ... }
 		if timer then
 			timer:stop()
+			timer:start(
+				ms,
+				0,
+				vim.schedule_wrap(function()
+					fn(unpack(args))
+				end)
+			)
 		end
-		timer:start(
-			ms,
-			0,
-			vim.schedule_wrap(function()
-				fn(unpack(args))
-			end)
-		)
 	end
 
 	local close = function()
