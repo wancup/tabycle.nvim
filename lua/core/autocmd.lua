@@ -16,7 +16,10 @@ end, 100)
 ---@param bufnr integer
 ---@return boolean
 local function should_fire_event(bufnr)
-	return not store.is_own_buf(bufnr) and vim.api.nvim_buf_is_valid(bufnr) and vim.api.nvim_buf_get_name(bufnr) ~= ""
+	return store.cycle_preview_win == nil
+		and vim.api.nvim_buf_is_valid(bufnr)
+		and vim.api.nvim_buf_get_name(bufnr) ~= ""
+		and not store.is_own_buf(bufnr)
 end
 
 M.init = function()
