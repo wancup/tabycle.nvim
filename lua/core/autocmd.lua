@@ -16,10 +16,7 @@ end, 100)
 ---@param bufnr integer
 ---@return boolean
 local function should_fire_event(bufnr)
-	return store.cycle_preview_win == nil
-		and vim.api.nvim_buf_is_valid(bufnr)
-		and vim.api.nvim_buf_get_name(bufnr) ~= ""
-		and not store.is_own_buf(bufnr)
+	return vim.api.nvim_buf_is_valid(bufnr) and vim.api.nvim_buf_get_name(bufnr) ~= "" and not store.is_own_buf(bufnr)
 end
 
 M.init = function()
@@ -29,6 +26,11 @@ M.init = function()
 		group = augroup,
 		callback = function(param)
 			vim.schedule(function()
+				-- Unintended BufEnter events occur when calling cycle_buffer consecutively.
+				-- So, do not record history while the preview is being displayed.
+				if store.cycle_preview_win ~= nil then
+					return
+				end
 				if should_fire_event(param.buf) then
 					tab.push_history(param.buf)
 					sync_ui()
