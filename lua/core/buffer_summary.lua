@@ -42,11 +42,11 @@ M.show = function()
 	local sign_col_index = 0
 	local cursor_col_index = 0
 	for _, t in ipairs(tab_list) do
-		local mark = t.modified and { icon = "*", hi_group = "Question" } or t.diagnostic_mark
+		local mark = t.modified and { summary_icon = "*", hi_group = "Question" } or t.diagnostic_mark
 		-- Sign Line
-		local icon_len = #mark.icon
+		local icon_len = #mark.summary_icon
 		local next_sign_col_index = sign_col_index + icon_len
-		vim.api.nvim_buf_set_text(buf, 0, sign_col_index, 0, sign_col_index, { mark.icon })
+		vim.api.nvim_buf_set_text(buf, 0, sign_col_index, 0, sign_col_index, { mark.summary_icon })
 		vim.api.nvim_buf_set_extmark(buf, ns_id, 0, sign_col_index, {
 			hl_group = mark.hi_group,
 			end_col = next_sign_col_index,
@@ -54,7 +54,7 @@ M.show = function()
 		sign_col_index = next_sign_col_index
 
 		-- Cursor Line
-		local mark_width = vim.fn.strwidth(mark.icon)
+		local mark_width = vim.fn.strwidth(mark.summary_icon)
 		local cursor = cursor_icon(t.is_current, "^", mark_width)
 		vim.api.nvim_buf_set_text(buf, 1, cursor_col_index, 1, cursor_col_index, { cursor })
 		cursor_col_index = cursor_col_index + #cursor

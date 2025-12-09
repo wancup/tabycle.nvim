@@ -3,7 +3,8 @@ local window = require("ui.window")
 local M = {}
 
 ---@class DiagnosticMark
----@field icon string
+---@field list_icon string
+---@field summary_icon string
 ---@field severity vim.diagnostic.SeverityInt | nil
 ---@field hi_group string
 
@@ -34,7 +35,8 @@ local function get_diagnostic_mark(bufnr)
 	if #diagnostics == 0 then
 		---@type DiagnosticMark
 		return {
-			icon = ".",
+			list_icon = "",
+			summary_icon = ".",
 			severity = nil,
 			hi_group = "Comment",
 		}
@@ -47,9 +49,11 @@ local function get_diagnostic_mark(bufnr)
 		end
 	end
 
+	local severity_initial = string.sub(vim.diagnostic.severity[top_severity], 1, 1)
 	---@type DiagnosticMark
 	return {
-		icon = string.sub(vim.diagnostic.severity[top_severity], 1, 1),
+		list_icon = string.format("[%s]", severity_initial),
+		summary_icon = severity_initial,
 		severity = top_severity,
 		hi_group = "DiagnosticSign" .. vim.diagnostic.severity[top_severity],
 	}
