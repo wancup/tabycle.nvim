@@ -48,6 +48,13 @@ M.make_buffer_list = function(tab_list, is_current)
 				line_hl_group = "Comment",
 			})
 		end
+		if t.modified then
+			local line = lines[i]
+			vim.api.nvim_buf_set_extmark(buf, ns_id, i - 1, #line - 1, {
+				hl_group = "Question",
+				end_col = #line,
+			})
+		end
 	end
 
 	---@type BufferList
