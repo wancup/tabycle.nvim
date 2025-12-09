@@ -16,7 +16,7 @@ local M = {}
 ---@field in_window boolean
 ---@field diagnostic DiagnosticInfo
 
-local max_history = 2
+local max_history = 100
 
 ---@type integer[]
 local history = {}
