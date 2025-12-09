@@ -42,7 +42,7 @@ M.show = function()
 	local sign_col_index = 0
 	local cursor_col_index = 0
 	for _, t in ipairs(tab_list) do
-		local mark = t.modified and { summary_icon = "*", hi_group = "Question" } or t.diagnostic_mark
+		local mark = t.modified and { summary_icon = "*", hi_group = "Question" } or t.diagnostic
 		-- Sign Line
 		local icon_len = #mark.summary_icon
 		local next_sign_col_index = sign_col_index + icon_len

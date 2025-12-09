@@ -29,7 +29,7 @@ M.make_buffer_list = function(tab_list, is_current)
 	for i, t in ipairs(tab_list) do
 		local _is_current = is_current(t)
 		local prefix = _is_current and ">" or " "
-		local diagnostic_mark = t.diagnostic_mark.severity ~= nil and t.diagnostic_mark.list_icon or ""
+		local diagnostic_mark = t.diagnostic.severity ~= nil and t.diagnostic.list_icon or ""
 		local modified_mark = t.modified and "*" or ""
 		local line = string.format("%s %s%s%s", prefix, t.short_name, modified_mark, diagnostic_mark)
 		vim.api.nvim_buf_set_text(buf, i - 1, 0, i - 1, 0, { line })
@@ -51,9 +51,9 @@ M.make_buffer_list = function(tab_list, is_current)
 				end_col = line_width,
 			})
 		end
-		if t.diagnostic_mark.severity ~= nil then
+		if t.diagnostic.severity ~= nil then
 			vim.api.nvim_buf_set_extmark(buf, ns_id, i - 1, line_width - diagnostic_mark_width, {
-				hl_group = t.diagnostic_mark.hi_group,
+				hl_group = t.diagnostic.hi_group,
 				end_col = line_width,
 			})
 		end

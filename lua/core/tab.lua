@@ -2,7 +2,7 @@ local window = require("ui.window")
 
 local M = {}
 
----@class DiagnosticMark
+---@class DiagnosticInfo
 ---@field list_icon string
 ---@field summary_icon string
 ---@field severity vim.diagnostic.SeverityInt | nil
@@ -14,7 +14,7 @@ local M = {}
 ---@field is_current boolean
 ---@field modified boolean
 ---@field in_window boolean
----@field diagnostic_mark DiagnosticMark
+---@field diagnostic DiagnosticInfo
 
 local max_history = 2
 
@@ -28,12 +28,12 @@ local sorted_cache = nil
 local history = {}
 
 ---@param bufnr integer
----@return DiagnosticMark
+---@return DiagnosticInfo
 local function get_diagnostic_mark(bufnr)
 	local diagnostics = vim.diagnostic.get(bufnr)
 
 	if #diagnostics == 0 then
-		---@type DiagnosticMark
+		---@type DiagnosticInfo
 		return {
 			list_icon = "",
 			summary_icon = ".",
@@ -50,7 +50,7 @@ local function get_diagnostic_mark(bufnr)
 	end
 
 	local severity_initial = string.sub(vim.diagnostic.severity[top_severity], 1, 1)
-	---@type DiagnosticMark
+	---@type DiagnosticInfo
 	return {
 		list_icon = string.format("[%s]", severity_initial),
 		summary_icon = severity_initial,
@@ -147,7 +147,7 @@ M.get_list = function()
 				is_current = buf == vim.api.nvim_get_current_buf(),
 				modified = vim.bo[buf].modified,
 				in_window = is_buf_in_window(buf),
-				diagnostic_mark = diagnostic_mark,
+				diagnostic = diagnostic_mark,
 			}
 			table.insert(tab_list, item)
 		end
