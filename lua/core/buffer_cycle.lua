@@ -230,62 +230,53 @@ local function find_target_buf(tab_list, direction)
 end
 
 ---@param direction "prev" | "next"
----@param immediately boolean
-local function cycle_buffer(direction, immediately)
+local function cycle_buffer(direction)
 	if store.cycle_list_win == nil and not store.cycle_progress_win then
 		working_win = vim.api.nvim_get_current_win()
 	end
-	if immediately == true then
+	if confirmation_timer == nil and selecting_buf == nil then
+		-- Start accepting preview request
+		source_buf = vim.api.nvim_get_current_buf()
 		local tab_list = tab.get_recency_list()
 		local target_buf = find_target_buf(tab_list, direction)
 		open_buf(target_buf)
-	else
-		if confirmation_timer == nil and selecting_buf == nil then
-			-- Start accepting preview request
-			source_buf = vim.api.nvim_get_current_buf()
-			local tab_list = tab.get_recency_list()
-			local target_buf = find_target_buf(tab_list, direction)
-			open_buf(target_buf)
-			confirmation_timer = vim.defer_fn(function()
-				if confirmation_timer ~= nil then
-					confirmation_timer = nil
-				end
-				close_cycle_progress()
-
-				-- Since ignoring on BufEnter autocmd, manullay push
-				tab.push_history(target_buf)
-			end, auto_confirming_ms)
-			show_cycle_progress()
-		else
-			close_cycle_progress()
+		confirmation_timer = vim.defer_fn(function()
 			if confirmation_timer ~= nil then
-				confirmation_timer:close()
 				confirmation_timer = nil
 			end
+			close_cycle_progress()
 
-			-- Restore the state before Cycle
-			if source_buf ~= nil then
-				open_buf(source_buf)
-				tab.push_history(source_buf)
-				source_buf = nil
-			end
-
-			local tab_list = tab.get_recency_list()
-			local target_buf = find_target_buf(tab_list, direction)
-			show_preview(tab_list, target_buf)
-			selecting_buf = target_buf
+			-- Since ignoring on BufEnter autocmd, manullay push
+			tab.push_history(target_buf)
+		end, auto_confirming_ms)
+		show_cycle_progress()
+	else
+		close_cycle_progress()
+		if confirmation_timer ~= nil then
+			confirmation_timer:close()
+			confirmation_timer = nil
 		end
+
+		-- Restore the state before Cycle
+		if source_buf ~= nil then
+			open_buf(source_buf)
+			tab.push_history(source_buf)
+			source_buf = nil
+		end
+
+		local tab_list = tab.get_recency_list()
+		local target_buf = find_target_buf(tab_list, direction)
+		show_preview(tab_list, target_buf)
+		selecting_buf = target_buf
 	end
 end
 
----@param immediately boolean
-M.cycle_back = function(immediately)
-	cycle_buffer("prev", immediately)
+M.cycle_back = function()
+	cycle_buffer("prev")
 end
 
----@param immediately boolean
-M.cycle_forward = function(immediately)
-	cycle_buffer("next", immediately)
+M.cycle_forward = function()
+	cycle_buffer("next")
 end
 
 M.close = function()
