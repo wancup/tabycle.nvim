@@ -8,9 +8,16 @@ local M = {}
 local buffer_list_ft = "tabycle-buffer-list"
 local cycle_win_width_ratio = 0.8
 local cycle_win_height_ratio = 0.8
+local auto_confirming_ms = 1000
+
+---@type uv.uv_timer_t | nil
+local confirmation_timer = nil
 
 ---@type integer | nil
-local current_buf = nil
+local selecting_buf = nil
+
+---@type integer | nil
+local source_buf = nil
 
 ---@type integer| nil
 local working_win = nil
@@ -31,6 +38,37 @@ local function open_buf(bufnr)
 		vim.api.nvim_set_current_win(exist_win)
 	elseif working_win ~= nil then
 		vim.api.nvim_win_set_buf(working_win, bufnr)
+	end
+end
+
+---@param tab_list TabItem[]
+local function select_cursor_buf(tab_list)
+	local cursor_pos = vim.api.nvim_win_get_cursor(store.cycle_list_win)
+	local selected_tab = tab_list[cursor_pos[1]]
+	open_buf(selected_tab.bufnr)
+	M.close()
+end
+
+local function show_cycle_progress()
+	local message_buf = vim.api.nvim_create_buf(false, true)
+	local message = "Press again to show buffer selecting window"
+	vim.api.nvim_buf_set_lines(message_buf, 0, -1, false, { message })
+	store.cycle_progress_win = vim.api.nvim_open_win(message_buf, false, {
+		relative = "editor",
+		width = #message,
+		height = 1,
+		row = 1,
+		col = 1,
+		style = "minimal",
+		border = "rounded",
+		focusable = false,
+	})
+end
+
+local function close_cycle_progress()
+	if store.cycle_progress_win ~= nil then
+		vim.api.nvim_win_close(store.cycle_progress_win, true)
+		store.cycle_progress_win = nil
 	end
 end
 
@@ -63,10 +101,7 @@ local function show_buffer_list(buffer_list, tab_list)
 	vim.keymap.set("n", "q", M.close, { buffer = buffer_list.bufnr, noremap = true, silent = true })
 	vim.keymap.set("n", "<esc>", M.close, { buffer = buffer_list.bufnr, noremap = true, silent = true })
 	vim.keymap.set("n", "<cr>", function()
-		local cursor_pos = vim.api.nvim_win_get_cursor(store.cycle_list_win)
-		local selected_tab = tab_list[cursor_pos[1]]
-		open_buf(selected_tab.bufnr)
-		M.close()
+		select_cursor_buf(tab_list)
 	end, { buffer = buffer_list.bufnr, noremap = true, silent = true })
 
 	if buffer_list.cursor_index ~= nil then
@@ -133,7 +168,7 @@ end
 ---@param direction "prev" | "next"
 ---@return integer
 local function find_target_buf(tab_list, direction)
-	local base_buf = current_buf ~= nil and current_buf or vim.api.nvim_get_current_buf()
+	local base_buf = selecting_buf ~= nil and selecting_buf or vim.api.nvim_get_current_buf()
 	local index = find_buf_index(tab_list, base_buf)
 	if index == nil then
 		return tab_list[1].bufnr
@@ -157,16 +192,47 @@ end
 ---@param direction "prev" | "next"
 ---@param immediately boolean
 local function cycle_buffer(direction, immediately)
-	if store.cycle_list_win == nil then
+	if store.cycle_list_win == nil and not store.cycle_progress_win then
 		working_win = vim.api.nvim_get_current_win()
 	end
-	local tab_list = tab.get_recency_list()
-	local target_buf = find_target_buf(tab_list, direction)
 	if immediately == true then
+		local tab_list = tab.get_recency_list()
+		local target_buf = find_target_buf(tab_list, direction)
 		open_buf(target_buf)
 	else
-		show_preview(tab_list, target_buf)
-		current_buf = target_buf
+		if confirmation_timer == nil then
+			-- Start accepting preview request
+			source_buf = vim.api.nvim_get_current_buf()
+			local tab_list = tab.get_recency_list()
+			local target_buf = find_target_buf(tab_list, direction)
+			open_buf(target_buf)
+			confirmation_timer = vim.defer_fn(function()
+				if confirmation_timer ~= nil then
+					confirmation_timer = nil
+				end
+				close_cycle_progress()
+
+				-- Since ignoring on BufEnter autocmd, manullay push
+				tab.push_history(target_buf)
+			end, auto_confirming_ms)
+			show_cycle_progress()
+		else
+			close_cycle_progress()
+			confirmation_timer:close()
+			confirmation_timer = nil
+
+			-- Restore the state before Cycle
+			if source_buf ~= nil then
+				open_buf(source_buf)
+				tab.push_history(source_buf)
+				source_buf = nil
+			end
+
+			local tab_list = tab.get_recency_list()
+			local target_buf = find_target_buf(tab_list, direction)
+			show_preview(tab_list, target_buf)
+			selecting_buf = target_buf
+		end
 	end
 end
 
@@ -189,7 +255,11 @@ M.close = function()
 		vim.api.nvim_win_close(store.cycle_preview_win, true)
 		store.cycle_preview_win = nil
 	end
-	current_buf = nil
+	selecting_buf = nil
+	if confirmation_timer ~= nil then
+		confirmation_timer:close()
+		confirmation_timer = nil
+	end
 end
 
 return M

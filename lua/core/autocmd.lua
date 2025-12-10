@@ -31,6 +31,12 @@ M.init = function()
 				if store.cycle_preview_win ~= nil then
 					return
 				end
+
+				-- Waiting for user action
+				if store.cycle_progress_win ~= nil then
+					return
+				end
+
 				if should_fire_event(param.buf) then
 					tab.push_history(param.buf)
 					sync_ui()

@@ -12,6 +12,9 @@ M.cycle_list_win = nil
 ---@type integer | nil
 M.cycle_preview_win = nil
 
+---@type integer | nil
+M.cycle_progress_win = nil
+
 ---@param bufnr integer
 ---@return boolean
 M.is_own_buf = function(bufnr)
