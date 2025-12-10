@@ -234,7 +234,8 @@ local function cycle_buffer(direction)
 	if store.cycle_list_win == nil and not store.cycle_progress_win then
 		working_win = vim.api.nvim_get_current_win()
 	end
-	if confirmation_timer == nil and selecting_buf == nil then
+	local is_first_call = confirmation_timer == nil and selecting_buf == nil
+	if is_first_call then
 		-- Start accepting preview request
 		source_buf = vim.api.nvim_get_current_buf()
 		local tab_list = tab.get_recency_list()
