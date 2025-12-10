@@ -121,6 +121,7 @@ M.get_list = function()
 	local tab_list = {}
 
 	local buffers = vim.api.nvim_list_bufs()
+	local current_buf = vim.api.nvim_get_current_buf()
 	for _, buf in ipairs(buffers) do
 		if not vim.api.nvim_buf_is_valid(buf) or not vim.bo[buf].buflisted then
 			goto continue
@@ -134,7 +135,7 @@ M.get_list = function()
 				bufnr = buf,
 				long_name = vim.fn.fnamemodify(full_path, ":p:."),
 				short_name = vim.fn.fnamemodify(full_path, ":t"),
-				is_current = buf == vim.api.nvim_get_current_buf(),
+				is_current = buf == current_buf,
 				modified = vim.bo[buf].modified,
 				in_window = is_buf_in_window(buf),
 				diagnostic = diagnostic_mark,
