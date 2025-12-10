@@ -10,8 +10,25 @@ local cycle_win_width_ratio = 0.8
 local cycle_win_height_ratio = 0.8
 local auto_confirming_ms = 1000
 
+local progress_frames = {
+	"----------",
+	"=---------",
+	"==--------",
+	"===-------",
+	"====------",
+	"=====-----",
+	"======----",
+	"=======---",
+	"========--",
+	"=========-",
+	"==========",
+}
+
 ---@type uv.uv_timer_t | nil
 local confirmation_timer = nil
+
+---@type uv.uv_timer_t | nil
+local progress_timer = nil
 
 ---@type integer | nil
 local selecting_buf = nil
@@ -50,24 +67,47 @@ local function select_cursor_buf(tab_list)
 end
 
 local function show_cycle_progress()
-	local message_buf = vim.api.nvim_create_buf(false, true)
-	local message = "Press again to show buffer selecting window"
-	vim.api.nvim_buf_set_lines(message_buf, 0, -1, false, { message })
-	store.cycle_progress_win = vim.api.nvim_open_win(message_buf, false, {
+	local frame_count = #progress_frames
+	local progress_buf = vim.api.nvim_create_buf(false, true)
+	store.cycle_progress_win = vim.api.nvim_open_win(progress_buf, false, {
 		relative = "editor",
-		width = #message,
+		width = #progress_frames[1],
 		height = 1,
-		row = 1,
-		col = 1,
+		row = 0,
+		col = 0,
 		style = "minimal",
 		border = "rounded",
 		focusable = false,
 	})
+
+	local interval = math.floor(auto_confirming_ms / frame_count)
+	local timer, err = vim.loop.new_timer()
+	if timer == nil then
+		error(err)
+	end
+	progress_timer = timer
+
+	local frame = 1
+	progress_timer:start(
+		0,
+		interval,
+		vim.schedule_wrap(function()
+			if vim.api.nvim_buf_is_valid(progress_buf) then
+				vim.api.nvim_buf_set_lines(progress_buf, 0, -1, false, { progress_frames[frame] })
+			end
+			frame = frame % frame_count + 1
+		end)
+	)
 end
 
 local function close_cycle_progress()
+	if progress_timer ~= nil then
+		progress_timer:stop()
+		progress_timer:close()
+		progress_timer = nil
+	end
 	if store.cycle_progress_win ~= nil then
-		vim.api.nvim_win_close(store.cycle_progress_win, true)
+		window.close_with_bd(store.cycle_progress_win)
 		store.cycle_progress_win = nil
 	end
 end
@@ -200,7 +240,7 @@ local function cycle_buffer(direction, immediately)
 		local target_buf = find_target_buf(tab_list, direction)
 		open_buf(target_buf)
 	else
-		if confirmation_timer == nil then
+		if confirmation_timer == nil and selecting_buf == nil then
 			-- Start accepting preview request
 			source_buf = vim.api.nvim_get_current_buf()
 			local tab_list = tab.get_recency_list()
@@ -218,8 +258,10 @@ local function cycle_buffer(direction, immediately)
 			show_cycle_progress()
 		else
 			close_cycle_progress()
-			confirmation_timer:close()
-			confirmation_timer = nil
+			if confirmation_timer ~= nil then
+				confirmation_timer:close()
+				confirmation_timer = nil
+			end
 
 			-- Restore the state before Cycle
 			if source_buf ~= nil then
