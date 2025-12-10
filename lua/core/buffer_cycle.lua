@@ -5,7 +5,7 @@ local window = require("ui.window")
 
 local M = {}
 
-local buffer_list_ft = "tabycle-buffer-list"
+local buffer_list_ft = "tabycle-cycle-list"
 local cycle_win_width_ratio = 0.8
 local cycle_win_height_ratio = 0.8
 local auto_confirming_ms = 1000
