@@ -122,7 +122,7 @@ local function show_cycle_progress()
 	})
 
 	local interval = math.floor(auto_confirming_ms / frame_count)
-	local timer, err = vim.loop.new_timer()
+	local timer, err = vim.uv.new_timer()
 	if timer == nil then
 		error(err)
 	end
