@@ -175,7 +175,7 @@ local function show_buffer_preview(bufnr)
 		style = "minimal",
 		border = "rounded",
 		focusable = false,
-		title = { { title, "Comment" } },
+		title = { { title } },
 		title_pos = "center",
 	}
 	if store.cycle_preview_win ~= nil then
