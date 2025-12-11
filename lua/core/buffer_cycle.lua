@@ -5,6 +5,8 @@ local window = require("ui.window")
 
 local M = {}
 
+local augroup = vim.api.nvim_create_augroup("TabycleBufferCycle", { clear = true })
+
 local buffer_list_ft = "tabycle-cycle-list"
 local cycle_win_width_ratio = 0.8
 local cycle_win_height_ratio = 0.8
@@ -23,6 +25,9 @@ local progress_frames = {
 	"tabycle:[=========-]",
 	"tabycle:[==========]",
 }
+
+local preview_placeholder_buf = vim.api.nvim_create_buf(false, true)
+vim.api.nvim_buf_set_lines(preview_placeholder_buf, 0, -1, false, { "<Not loaded yet>" })
 
 ---@type uv.uv_timer_t | nil
 local confirmation_timer = nil
@@ -59,11 +64,47 @@ local function open_buf(bufnr)
 end
 
 ---@param tab_list TabItem[]
-local function select_cursor_buf(tab_list)
+---@return TabItem
+local function get_selecting_tab(tab_list)
 	local cursor_pos = vim.api.nvim_win_get_cursor(store.cycle_list_win)
-	local selected_tab = tab_list[cursor_pos[1]]
-	open_buf(selected_tab.bufnr)
-	M.close()
+	return tab_list[cursor_pos[1]]
+end
+
+---@param tab_list TabItem[]
+---@param bufnr integer
+---@return integer | nil
+local function find_buf_index(tab_list, bufnr)
+	for i, t in ipairs(tab_list) do
+		if t.bufnr == bufnr then
+			return i
+		end
+	end
+	return nil
+end
+
+---@param tab_list TabItem[]
+---@param direction "prev" | "next"
+---@return integer
+local function find_target_buf(tab_list, direction)
+	local base_buf = selecting_buf ~= nil and selecting_buf or vim.api.nvim_get_current_buf()
+	local index = find_buf_index(tab_list, base_buf)
+	if index == nil then
+		return tab_list[1].bufnr
+	end
+
+	if direction == "prev" then
+		if index >= #tab_list then
+			return tab_list[1].bufnr
+		else
+			return tab_list[index + 1].bufnr
+		end
+	end
+
+	if index <= 1 then
+		return tab_list[#tab_list].bufnr
+	else
+		return tab_list[index - 1].bufnr
+	end
 end
 
 local function show_cycle_progress()
@@ -112,42 +153,6 @@ local function close_cycle_progress()
 	end
 end
 
----@param buffer_list BufferList
----@param tab_list TabItem[]
-local function show_buffer_list(buffer_list, tab_list)
-	local row = math.floor((vim.o.lines - buffer_list.height) / 2)
-	local whole_width = math.floor(vim.o.columns * cycle_win_width_ratio)
-	local col = math.floor((vim.o.columns - whole_width) / 2)
-	local max_height = math.floor(vim.o.lines * cycle_win_height_ratio)
-
-	---@type vim.api.keyset.win_config
-	local win_config = {
-		relative = "editor",
-		width = buffer_list.width,
-		height = math.min(buffer_list.height, max_height),
-		row = row,
-		col = col,
-		style = "minimal",
-		border = "rounded",
-	}
-	if store.cycle_list_win ~= nil then
-		window.replace_with_bd(store.cycle_list_win, buffer_list.bufnr, win_config)
-	else
-		store.cycle_list_win = vim.api.nvim_open_win(buffer_list.bufnr, true, win_config)
-	end
-
-	vim.api.nvim_set_option_value("modifiable", false, { buf = buffer_list.bufnr })
-	vim.api.nvim_set_option_value("filetype", buffer_list_ft, { buf = buffer_list.bufnr })
-	vim.keymap.set("n", "q", M.close, { buffer = buffer_list.bufnr, noremap = true, silent = true })
-	vim.keymap.set("n", "<cr>", function()
-		select_cursor_buf(tab_list)
-	end, { buffer = buffer_list.bufnr, noremap = true, silent = true })
-
-	if buffer_list.cursor_index ~= nil then
-		vim.api.nvim_win_set_cursor(store.cycle_list_win, { buffer_list.cursor_index, 0 })
-	end
-end
-
 ---@param bufnr integer
 local function show_buffer_preview(bufnr)
 	local win_gap = 2
@@ -174,67 +179,75 @@ local function show_buffer_preview(bufnr)
 		title_pos = "center",
 	}
 	if store.cycle_preview_win ~= nil then
-		vim.api.nvim_win_set_buf(store.cycle_preview_win, bufnr)
+		local _buf = vim.api.nvim_buf_is_loaded(bufnr) and bufnr or preview_placeholder_buf
+		vim.api.nvim_win_set_buf(store.cycle_preview_win, _buf)
 		vim.api.nvim_win_set_config(store.cycle_preview_win, win_config)
 	else
 		store.cycle_preview_win = vim.api.nvim_open_win(bufnr, false, win_config)
 	end
 end
 
+---@param buffer_list BufferList
+---@param tab_list TabItem[]
+---@param target_buf integer
+local function show_buffer_list(buffer_list, tab_list, target_buf)
+	local row = math.floor((vim.o.lines - buffer_list.height) / 2)
+	local whole_width = math.floor(vim.o.columns * cycle_win_width_ratio)
+	local col = math.floor((vim.o.columns - whole_width) / 2)
+	local max_height = math.floor(vim.o.lines * cycle_win_height_ratio)
+
+	---@type vim.api.keyset.win_config
+	local win_config = {
+		relative = "editor",
+		width = buffer_list.width,
+		height = math.min(buffer_list.height, max_height),
+		row = row,
+		col = col,
+		style = "minimal",
+		border = "rounded",
+	}
+	if store.cycle_list_win ~= nil then
+		window.replace_with_bd(store.cycle_list_win, buffer_list.bufnr, win_config)
+	else
+		store.cycle_list_win = vim.api.nvim_open_win(buffer_list.bufnr, true, win_config)
+	end
+
+	local target_index = find_buf_index(tab_list, target_buf)
+	vim.api.nvim_win_set_cursor(store.cycle_list_win, { target_index, 0 })
+	vim.api.nvim_set_option_value("modifiable", false, { buf = buffer_list.bufnr })
+	vim.api.nvim_set_option_value("filetype", buffer_list_ft, { buf = buffer_list.bufnr })
+	vim.keymap.set("n", "q", M.close, { buffer = buffer_list.bufnr, noremap = true, silent = true })
+	vim.keymap.set("n", "<cr>", function()
+		local selected_tab = get_selecting_tab(tab_list)
+		M.close()
+		open_buf(selected_tab.bufnr)
+	end, { buffer = buffer_list.bufnr, noremap = true, silent = true })
+
+	vim.api.nvim_create_autocmd({ "CursorMoved" }, {
+		group = augroup,
+		buffer = buffer_list.bufnr,
+		callback = function()
+			local selected_tab = get_selecting_tab(tab_list)
+			show_buffer_preview(selected_tab.bufnr)
+			selecting_buf = selected_tab.bufnr
+		end,
+	})
+end
+
 ---@param tab_list TabItem[]
 ---@param target_buf integer
 local function show_preview(tab_list, target_buf)
-	local buffer_list = buf.make_buffer_list(tab_list, function(t)
-		return t.bufnr == target_buf
-	end)
-	show_buffer_list(buffer_list, tab_list)
+	local buffer_list = buf.make_buffer_list(tab_list)
+	show_buffer_list(buffer_list, tab_list, target_buf)
 	show_buffer_preview(target_buf)
 end
-
----@param tab_list TabItem[]
----@param bufnr integer
----@return integer | nil
-local function find_buf_index(tab_list, bufnr)
-	for i, t in ipairs(tab_list) do
-		if t.bufnr == bufnr then
-			return i
-		end
-	end
-	return nil
-end
-
----@param tab_list TabItem[]
----@param direction "prev" | "next"
----@return integer
-local function find_target_buf(tab_list, direction)
-	local base_buf = selecting_buf ~= nil and selecting_buf or vim.api.nvim_get_current_buf()
-	local index = find_buf_index(tab_list, base_buf)
-	if index == nil then
-		return tab_list[1].bufnr
-	end
-
-	if direction == "prev" then
-		if index >= #tab_list then
-			return tab_list[1].bufnr
-		else
-			return tab_list[index + 1].bufnr
-		end
-	end
-
-	if index <= 1 then
-		return tab_list[#tab_list].bufnr
-	else
-		return tab_list[index - 1].bufnr
-	end
-end
-
 ---@param direction "prev" | "next"
 local function cycle_buffer(direction)
-	if store.cycle_list_win == nil and not store.cycle_progress_win then
-		working_win = vim.api.nvim_get_current_win()
-	end
 	local is_first_call = confirmation_timer == nil and selecting_buf == nil
 	if is_first_call then
+		-- Store base window
+		working_win = vim.api.nvim_get_current_win()
+
 		-- Start accepting preview request
 		source_buf = vim.api.nvim_get_current_buf()
 		local tab_list = tab.get_recency_list()
@@ -266,7 +279,12 @@ local function cycle_buffer(direction)
 
 		local tab_list = tab.get_recency_list()
 		local target_buf = find_target_buf(tab_list, direction)
-		show_preview(tab_list, target_buf)
+		if store.cycle_preview_win == nil then
+			show_preview(tab_list, target_buf)
+		else
+			local selecting_index = find_buf_index(tab_list, target_buf)
+			vim.api.nvim_win_set_cursor(store.cycle_list_win, { selecting_index, 0 })
+		end
 		selecting_buf = target_buf
 	end
 end

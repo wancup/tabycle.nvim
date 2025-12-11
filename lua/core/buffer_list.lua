@@ -30,9 +30,7 @@ M.show = function(tab_list)
 		return nil
 	end
 
-	local buffer_list = buf.make_buffer_list(list, function(t)
-		return t.is_current
-	end)
+	local buffer_list = buf.make_buffer_list(list, ">")
 	local row = math.floor(vim.o.lines - buffer_list.height - 3)
 	local col = math.floor(vim.o.columns - buffer_list.width - 3)
 
