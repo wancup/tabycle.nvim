@@ -190,7 +190,7 @@ end
 ---@param buffer_list BufferList
 ---@param tab_list TabItem[]
 ---@param target_buf integer
-local function show_buffer_list(buffer_list, tab_list, target_buf)
+local function show_cycle_list(buffer_list, tab_list, target_buf)
 	local row = math.floor((vim.o.lines - buffer_list.height) / 2)
 	local whole_width = math.floor(vim.o.columns * cycle_win_width_ratio)
 	local col = math.floor((vim.o.columns - whole_width) / 2)
@@ -238,7 +238,7 @@ end
 ---@param target_buf integer
 local function show_preview(tab_list, target_buf)
 	local buffer_list = buf.make_buffer_list(tab_list)
-	show_buffer_list(buffer_list, tab_list, target_buf)
+	show_cycle_list(buffer_list, tab_list, target_buf)
 	show_buffer_preview(target_buf)
 end
 ---@param direction "prev" | "next"
