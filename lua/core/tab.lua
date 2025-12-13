@@ -10,6 +10,7 @@ local M = {}
 
 ---@class TabItem
 ---@field bufnr integer
+---@field long_name string
 ---@field short_name string
 ---@field is_current boolean
 ---@field modified boolean
