@@ -5,39 +5,39 @@ local buffer_cycle = require("core.buffer_cycle")
 
 local M = {}
 
-M.show_summary = function()
+function M.show_summary()
 	buffer_summary.show()
 end
 
-M.close_summary = function()
+function M.close_summary()
 	buffer_summary.close()
 end
 
-M.toggle_summary = function()
+function M.toggle_summary()
 	buffer_summary.toggle()
 end
 
-M.show_list = function()
+function M.show_list()
 	buffer_list.show()
 end
 
-M.close_list = function()
+function M.close_list()
 	buffer_list.close()
 end
 
-M.toggle_list = function()
+function M.toggle_list()
 	buffer_list.toggle()
 end
 
-M.cycle_buffer_back = function()
+function M.cycle_buffer_back()
 	buffer_cycle.cycle_back()
 end
 
-M.cycle_buffer_forward = function()
+function M.cycle_buffer_forward()
 	buffer_cycle.cycle_forward()
 end
 
-M.setup = function()
+function M.setup()
 	-- TODO: skip initialization if unnecessary
 	autocmd.init()
 

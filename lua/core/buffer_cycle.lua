@@ -289,15 +289,15 @@ local function cycle_buffer(direction)
 	end
 end
 
-M.cycle_back = function()
+function M.cycle_back()
 	cycle_buffer("prev")
 end
 
-M.cycle_forward = function()
+function M.cycle_forward()
 	cycle_buffer("next")
 end
 
-M.close = function()
+function M.close()
 	if store.cycle_list_win ~= nil then
 		window.close_with_bd(store.cycle_list_win)
 		store.cycle_list_win = nil

@@ -24,7 +24,7 @@ end
 
 ---@param tab_list TabItem[] | nil
 ---@return TabItem[] | nil
-M.sync = function(tab_list)
+function M.sync(tab_list)
 	if enabled == true then
 		return M.show(tab_list)
 	end
@@ -33,7 +33,7 @@ end
 
 ---@param tab_list TabItem[] | nil
 ---@return TabItem[] | nil
-M.show = function(tab_list)
+function M.show(tab_list)
 	enabled = true
 	if tab_list ~= nil and #tab_list == 0 then
 		return
@@ -90,7 +90,7 @@ M.show = function(tab_list)
 	return list
 end
 
-M.close = function()
+function M.close()
 	enabled = false
 
 	if store.buffer_summary_win ~= nil then
@@ -99,7 +99,7 @@ M.close = function()
 	end
 end
 
-M.toggle = function()
+function M.toggle()
 	if store.buffer_summary_win == nil then
 		M.show()
 	else

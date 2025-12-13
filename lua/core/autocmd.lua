@@ -19,7 +19,7 @@ local function should_fire_event(bufnr)
 	return vim.api.nvim_buf_is_valid(bufnr) and vim.api.nvim_buf_get_name(bufnr) ~= "" and not store.is_own_buf(bufnr)
 end
 
-M.init = function()
+function M.init()
 	vim.api.nvim_create_autocmd({
 		"BufEnter",
 	}, {

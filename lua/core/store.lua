@@ -17,7 +17,7 @@ M.cycle_progress_win = nil
 
 ---@param bufnr integer
 ---@return boolean
-M.is_own_buf = function(bufnr)
+function M.is_own_buf(bufnr)
 	local fin_fields = {
 		"buffer_list_win",
 		"buffer_summary_win",

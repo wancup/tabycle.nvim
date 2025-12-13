@@ -10,7 +10,7 @@ local ns_id = vim.api.nvim_create_namespace("tabycle-buf")
 ---@param tab_list TabItem[]
 ---@param cursor_icon string | nil
 ---@return BufferList
-M.make_buffer_list = function(tab_list, cursor_icon)
+function M.make_buffer_list(tab_list, cursor_icon)
 	---@type string[]
 	local lines = {}
 

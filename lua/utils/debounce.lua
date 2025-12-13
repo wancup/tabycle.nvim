@@ -4,7 +4,7 @@ local M = {}
 ---@param ms number
 ---@return function
 ---@return function
-M.debounce = function(fn, ms)
+function M.debounce(fn, ms)
 	local timer = vim.uv.new_timer()
 	local debounced = function(...)
 		local args = { ... }

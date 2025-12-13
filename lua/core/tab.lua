@@ -82,7 +82,7 @@ local function sort_by_recency(list)
 end
 
 ---@param bufnr integer
-M.push_history = function(bufnr)
+function M.push_history(bufnr)
 	local latest = history[#history]
 	if bufnr == latest then
 		return
@@ -116,7 +116,7 @@ local function is_buf_in_window(bufnr)
 end
 
 ---@return TabItem[]
-M.get_list = function()
+function M.get_list()
 	---@type TabItem[]
 	local tab_list = {}
 
@@ -150,7 +150,7 @@ M.get_list = function()
 end
 
 ---@return TabItem[]
-M.get_recency_list = function()
+function M.get_recency_list()
 	local _list = M.get_list()
 	local tab_list = vim.deepcopy(_list)
 	sort_by_recency(tab_list)
