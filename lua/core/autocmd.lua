@@ -50,6 +50,7 @@ M.init = function()
 		"BufModifiedSet",
 		"DiagnosticChanged",
 		"ColorScheme",
+		"VimResized",
 	}, {
 		group = augroup,
 		callback = function(param)
