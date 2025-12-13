@@ -9,8 +9,8 @@ local M = {}
 local augroup = vim.api.nvim_create_augroup("Tabycle", { clear = true })
 
 local sync_ui = debounce.debounce(function()
-	buffer_summary.sync()
-	buffer_list.sync()
+	local list = buffer_summary.sync()
+	buffer_list.sync(list)
 end, 100)
 
 ---@param bufnr integer
