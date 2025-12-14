@@ -26,9 +26,6 @@ local progress_frames = {
 	"tabycle:[==========]",
 }
 
-local preview_placeholder_buf = vim.api.nvim_create_buf(false, true)
-vim.api.nvim_buf_set_lines(preview_placeholder_buf, 0, -1, false, { "<Not loaded yet>" })
-
 ---@type uv.uv_timer_t | nil
 local confirmation_timer = nil
 
@@ -178,9 +175,17 @@ local function show_buffer_preview(bufnr)
 		title = { { title } },
 		title_pos = "center",
 	}
+
+	if not vim.api.nvim_buf_is_loaded(bufnr) then
+		vim.fn.bufload(bufnr)
+		-- Detect and set filetype for syntax highlighting
+		vim.api.nvim_buf_call(bufnr, function()
+			vim.cmd("filetype detect")
+		end)
+	end
+
 	if store.cycle_preview_win ~= nil then
-		local _buf = vim.api.nvim_buf_is_loaded(bufnr) and bufnr or preview_placeholder_buf
-		vim.api.nvim_win_set_buf(store.cycle_preview_win, _buf)
+		vim.api.nvim_win_set_buf(store.cycle_preview_win, bufnr)
 		vim.api.nvim_win_set_config(store.cycle_preview_win, win_config)
 	else
 		store.cycle_preview_win = vim.api.nvim_open_win(bufnr, false, win_config)
