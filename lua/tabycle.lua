@@ -1,3 +1,4 @@
+local config = require("core.config")
 local autocmd = require("core.autocmd")
 local buffer_summary = require("core.buffer_summary")
 local buffer_list = require("core.buffer_list")
@@ -37,8 +38,9 @@ function M.cycle_buffer_forward()
 	buffer_cycle.cycle_forward()
 end
 
-function M.setup()
-	-- TODO: skip initialization if unnecessary
+---@param opts TabycleConfig | nil
+function M.setup(opts)
+	config.init(opts)
 	autocmd.init()
 
 	vim.schedule(function()

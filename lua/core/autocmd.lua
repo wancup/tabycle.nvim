@@ -1,3 +1,4 @@
+local config = require("core.config")
 local tab = require("core.tab")
 local store = require("core.store")
 local buffer_summary = require("core.buffer_summary")
@@ -8,10 +9,8 @@ local M = {}
 
 local augroup = vim.api.nvim_create_augroup("Tabycle", { clear = true })
 
-local sync_ui = debounce.debounce(function()
-	local list = buffer_summary.sync()
-	buffer_list.sync(list)
-end, 100)
+---@type function | nil
+local sync_ui = nil
 
 ---@param bufnr integer
 ---@return boolean
@@ -20,6 +19,11 @@ local function should_fire_event(bufnr)
 end
 
 function M.init()
+	sync_ui = debounce.debounce(function()
+		local list = buffer_summary.sync()
+		buffer_list.sync(list)
+	end, config.options.debounce_ms)
+
 	vim.api.nvim_create_autocmd({
 		"BufEnter",
 	}, {

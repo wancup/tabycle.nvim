@@ -1,3 +1,4 @@
+local config = require("core.config")
 local window = require("ui.window")
 
 local M = {}
@@ -16,8 +17,6 @@ local M = {}
 ---@field modified boolean
 ---@field in_window boolean
 ---@field diagnostic DiagnosticInfo
-
-local max_history = 100
 
 ---@type integer[]
 local history = {}
@@ -98,7 +97,7 @@ function M.push_history(bufnr)
 		return
 	end
 
-	if #history > max_history then
+	if #history > config.options.history.max_size then
 		table.remove(history, 1)
 	end
 

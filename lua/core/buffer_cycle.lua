@@ -1,3 +1,4 @@
+local config = require("core.config")
 local tab = require("core.tab")
 local buf = require("core.buf")
 local store = require("core.store")
@@ -8,9 +9,6 @@ local M = {}
 local augroup = vim.api.nvim_create_augroup("TabycleBufferCycle", { clear = true })
 
 local buffer_list_ft = "tabycle-cycle-list"
-local cycle_win_width_ratio = 0.8
-local cycle_win_height_ratio = 0.8
-local auto_confirming_ms = 1000
 
 local progress_frames = {
 	"tabycle:[----------]",
@@ -114,11 +112,11 @@ local function show_cycle_progress()
 		row = 0,
 		col = 0,
 		style = "minimal",
-		border = "rounded",
 		focusable = false,
+		border = config.options.cycle.border,
 	})
 
-	local interval = math.floor(auto_confirming_ms / frame_count)
+	local interval = math.floor(config.options.cycle.auto_confirm_ms / frame_count)
 	local timer, err = vim.uv.new_timer()
 	if timer == nil then
 		error(err)
@@ -152,11 +150,11 @@ end
 
 ---@param bufnr integer
 local function show_buffer_preview(bufnr)
-	local win_gap = 2
+	local win_gap = config.options.cycle.win_gap
 	local list_win = store.cycle_list_win ~= nil and vim.api.nvim_win_get_config(store.cycle_list_win) or nil
 	local list_width = list_win ~= nil and list_win.width or 0
-	local height = math.floor(vim.o.lines * cycle_win_height_ratio)
-	local width = math.floor((vim.o.columns * cycle_win_width_ratio) - list_width - win_gap)
+	local height = math.floor(vim.o.lines * config.options.cycle.height_ratio)
+	local width = math.floor((vim.o.columns * config.options.cycle.width_ratio) - list_width - win_gap)
 	local row = math.floor((vim.o.lines - height) / 2)
 	local col = list_win ~= nil and list_win.col + list_win.width + win_gap or math.floor((vim.o.columns - width) / 2)
 	local bufname = vim.fn.bufname(bufnr)
@@ -170,7 +168,7 @@ local function show_buffer_preview(bufnr)
 		row = row,
 		col = col,
 		style = "minimal",
-		border = "rounded",
+		border = config.options.cycle.border,
 		focusable = false,
 		title = { { title } },
 		title_pos = "center",
@@ -197,9 +195,9 @@ end
 ---@param target_buf integer
 local function show_cycle_list(buffer_list, tab_list, target_buf)
 	local row = math.floor((vim.o.lines - buffer_list.height) / 2)
-	local whole_width = math.floor(vim.o.columns * cycle_win_width_ratio)
+	local whole_width = math.floor(vim.o.columns * config.options.cycle.width_ratio)
 	local col = math.floor((vim.o.columns - whole_width) / 2)
-	local max_height = math.floor(vim.o.lines * cycle_win_height_ratio)
+	local max_height = math.floor(vim.o.lines * config.options.cycle.height_ratio)
 
 	---@type vim.api.keyset.win_config
 	local win_config = {
@@ -209,7 +207,7 @@ local function show_cycle_list(buffer_list, tab_list, target_buf)
 		row = row,
 		col = col,
 		style = "minimal",
-		border = "rounded",
+		border = config.options.cycle.border,
 	}
 	if store.cycle_list_win ~= nil then
 		window.replace_with_bd(store.cycle_list_win, buffer_list.bufnr, win_config)
@@ -266,7 +264,7 @@ local function cycle_buffer(direction)
 
 			-- Since ignoring on BufEnter autocmd, manullay push
 			tab.push_history(target_buf)
-		end, auto_confirming_ms)
+		end, config.options.cycle.auto_confirm_ms)
 		show_cycle_progress()
 	else
 		close_cycle_progress()

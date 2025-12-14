@@ -1,3 +1,4 @@
+local config = require("core.config")
 local tab = require("core.tab")
 local store = require("core.store")
 local window = require("ui.window")
@@ -50,7 +51,8 @@ function M.show(tab_list)
 	local sign_col_index = 0
 	local cursor_col_index = 0
 	for _, t in ipairs(list) do
-		local mark = t.modified and { summary_icon = "*", hi_group = "Question" } or t.diagnostic
+		local mark = t.modified and { summary_icon = config.options.summary.modified_icon, hi_group = "Question" }
+			or t.diagnostic
 		-- Sign Line
 		local icon_len = #mark.summary_icon
 		local next_sign_col_index = sign_col_index + icon_len
@@ -63,21 +65,25 @@ function M.show(tab_list)
 
 		-- Cursor Line
 		local mark_width = vim.fn.strwidth(mark.summary_icon)
-		local cursor = cursor_icon(t.is_current, "^", mark_width)
+		local cursor = cursor_icon(t.is_current, config.options.summary.cursor_icon, mark_width)
 		vim.api.nvim_buf_set_text(buf, 1, cursor_col_index, 1, cursor_col_index, { cursor })
 		cursor_col_index = cursor_col_index + #cursor
 	end
 	vim.api.nvim_buf_set_extmark(buf, ns_id, 1, 0, { line_hl_group = "Comment" })
+
+	local pos = config.options.summary.position
+	local row = config.resolve_position(pos.row, vim.o.lines, 2)
+	local col = config.resolve_position(pos.col, vim.o.columns, sign_col_index)
 
 	---@type vim.api.keyset.win_config
 	local win_config = {
 		relative = "editor",
 		width = sign_col_index,
 		height = 2,
-		row = 2,
-		col = vim.o.columns - sign_col_index - 1,
+		row = row,
+		col = col,
 		style = "minimal",
-		border = "none",
+		border = config.options.summary.border,
 		focusable = false,
 	}
 
