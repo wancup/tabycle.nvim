@@ -27,4 +27,21 @@ function M.is_floating(win_id)
 	return false
 end
 
+---@param value TabyclePositionValue
+---@param max integer
+---@param size integer
+---@return integer
+function M.resolve_position(value, max, size)
+	local resolved
+	if type(value) == "function" then
+		resolved = value()
+	else
+		resolved = value
+	end
+	if resolved < 0 then
+		return max - size + resolved
+	end
+	return resolved
+end
+
 return M
