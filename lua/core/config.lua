@@ -4,13 +4,16 @@ local M = {}
 ---@field close string
 ---@field open string
 
----@class TabycleConfigCycle
+---@class TabycleConfigCycleWin
 ---@field width_ratio number
 ---@field height_ratio number
----@field settle_ms integer
 ---@field border string
----@field win_gap integer
+---@field col_gap integer
+
+---@class TabycleConfigCycle
+---@field settle_ms integer
 ---@field keymaps TabycleConfigCycleKeymaps
+---@field win TabycleConfigCycleWin
 
 ---@class TabycleConfigHistory
 ---@field max_size integer
@@ -21,18 +24,26 @@ local M = {}
 ---@field row TabyclePositionValue
 ---@field col TabyclePositionValue
 
+---@class TabycleConfigSummaryWin
+---@field row TabyclePositionValue
+---@field col TabyclePositionValue
+---@field border string
+
 ---@class TabycleConfigSummary
 ---@field enabled boolean
----@field position TabycleConfigPosition
----@field border string
 ---@field cursor_icon string
 ---@field modified_icon string
+---@field win TabycleConfigSummaryWin
+
+---@class TabycleConfigListWin
+---@field row TabyclePositionValue
+---@field col TabyclePositionValue
+---@field border string
 
 ---@class TabycleConfigList
 ---@field enabled boolean
----@field position TabycleConfigPosition
----@field border string
 ---@field cursor_icon string
+---@field win TabycleConfigListWin
 
 ---@class TabycleConfig
 ---@field cycle TabycleConfigCycle
@@ -44,14 +55,16 @@ local M = {}
 ---@type TabycleConfig
 M.defaults = {
 	cycle = {
-		width_ratio = 0.8,
-		height_ratio = 0.8,
 		settle_ms = 1000,
-		border = "rounded",
-		win_gap = 2,
 		keymaps = {
 			close = "q",
 			open = "<cr>",
+		},
+		win = {
+			width_ratio = 0.8,
+			height_ratio = 0.8,
+			border = "rounded",
+			col_gap = 2,
 		},
 	},
 	history = {
@@ -59,16 +72,22 @@ M.defaults = {
 	},
 	summary = {
 		enabled = true,
-		position = { row = 2, col = -1 },
-		border = "none",
 		modified_icon = "*",
 		cursor_icon = "^",
+		win = {
+			row = 2,
+			col = -1,
+			border = "none",
+		},
 	},
 	list = {
 		enabled = false,
-		position = { row = -3, col = -3 },
-		border = "rounded",
 		cursor_icon = ">",
+		win = {
+			row = -3,
+			col = -3,
+			border = "rounded",
+		},
 	},
 	debounce_ms = 100,
 }

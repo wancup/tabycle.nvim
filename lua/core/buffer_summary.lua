@@ -71,9 +71,9 @@ function M.show(tab_list)
 	end
 	vim.api.nvim_buf_set_extmark(buf, ns_id, 1, 0, { line_hl_group = "Comment" })
 
-	local pos = config.options.summary.position
-	local row = window.resolve_position(pos.row, vim.o.lines, 2)
-	local col = window.resolve_position(pos.col, vim.o.columns, sign_col_index)
+	local win_opt = config.options.summary.win
+	local row = window.resolve_position(win_opt.row, vim.o.lines, 2)
+	local col = window.resolve_position(win_opt.col, vim.o.columns, sign_col_index)
 
 	---@type vim.api.keyset.win_config
 	local win_config = {
@@ -83,7 +83,7 @@ function M.show(tab_list)
 		row = row,
 		col = col,
 		style = "minimal",
-		border = config.options.summary.border,
+		border = win_opt.border,
 		focusable = false,
 	}
 

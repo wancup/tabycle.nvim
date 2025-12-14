@@ -113,7 +113,7 @@ local function show_cycle_progress()
 		col = 0,
 		style = "minimal",
 		focusable = false,
-		border = config.options.cycle.border,
+		border = config.options.cycle.win.border,
 	})
 
 	local interval = math.floor(config.options.cycle.settle_ms / frame_count)
@@ -150,11 +150,11 @@ end
 
 ---@param bufnr integer
 local function show_buffer_preview(bufnr)
-	local win_gap = config.options.cycle.win_gap
+	local win_gap = config.options.cycle.win.col_gap
 	local list_win = store.cycle_list_win ~= nil and vim.api.nvim_win_get_config(store.cycle_list_win) or nil
 	local list_width = list_win ~= nil and list_win.width or 0
-	local height = math.floor(vim.o.lines * config.options.cycle.height_ratio)
-	local width = math.floor((vim.o.columns * config.options.cycle.width_ratio) - list_width - win_gap)
+	local height = math.floor(vim.o.lines * config.options.cycle.win.height_ratio)
+	local width = math.floor((vim.o.columns * config.options.cycle.win.width_ratio) - list_width - win_gap)
 	local row = math.floor((vim.o.lines - height) / 2)
 	local col = list_win ~= nil and list_win.col + list_win.width + win_gap or math.floor((vim.o.columns - width) / 2)
 	local bufname = vim.fn.bufname(bufnr)
@@ -168,7 +168,7 @@ local function show_buffer_preview(bufnr)
 		row = row,
 		col = col,
 		style = "minimal",
-		border = config.options.cycle.border,
+		border = config.options.cycle.win.border,
 		focusable = false,
 		title = { { title } },
 		title_pos = "center",
@@ -195,9 +195,9 @@ end
 ---@param target_buf integer
 local function show_cycle_list(buffer_list, tab_list, target_buf)
 	local row = math.floor((vim.o.lines - buffer_list.height) / 2)
-	local whole_width = math.floor(vim.o.columns * config.options.cycle.width_ratio)
+	local whole_width = math.floor(vim.o.columns * config.options.cycle.win.width_ratio)
 	local col = math.floor((vim.o.columns - whole_width) / 2)
-	local max_height = math.floor(vim.o.lines * config.options.cycle.height_ratio)
+	local max_height = math.floor(vim.o.lines * config.options.cycle.win.height_ratio)
 
 	---@type vim.api.keyset.win_config
 	local win_config = {
@@ -207,7 +207,7 @@ local function show_cycle_list(buffer_list, tab_list, target_buf)
 		row = row,
 		col = col,
 		style = "minimal",
-		border = config.options.cycle.border,
+		border = config.options.cycle.win.border,
 	}
 	if store.cycle_list_win ~= nil then
 		window.replace_with_bd(store.cycle_list_win, buffer_list.bufnr, win_config)

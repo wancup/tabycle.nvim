@@ -32,9 +32,9 @@ function M.show(tab_list)
 	end
 
 	local buffer_list = buf.make_buffer_list(list, config.options.list.cursor_icon)
-	local pos = config.options.list.position
-	local row = window.resolve_position(pos.row, vim.o.lines, buffer_list.height)
-	local col = window.resolve_position(pos.col, vim.o.columns, buffer_list.width)
+	local win_opt = config.options.list.win
+	local row = window.resolve_position(win_opt.row, vim.o.lines, buffer_list.height)
+	local col = window.resolve_position(win_opt.col, vim.o.columns, buffer_list.width)
 
 	---@type vim.api.keyset.win_config
 	local win_config = {
@@ -44,7 +44,7 @@ function M.show(tab_list)
 		row = row,
 		col = col,
 		style = "minimal",
-		border = config.options.list.border,
+		border = win_opt.border,
 		focusable = false,
 	}
 	if store.buffer_list_win ~= nil then
