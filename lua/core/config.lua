@@ -6,6 +6,11 @@ local M = {}
 ---@field open_split string
 ---@field open_vsplit string
 
+---@class TabycleConfigProgressWin
+---@field row TabyclePositionValue
+---@field col TabyclePositionValue
+---@field border string
+
 ---@class TabycleConfigCycleWin
 ---@field width_ratio number
 ---@field height_ratio number
@@ -16,6 +21,7 @@ local M = {}
 ---@field settle_ms integer
 ---@field keymaps TabycleConfigCycleKeymaps
 ---@field win TabycleConfigCycleWin
+---@field progress_win TabycleConfigProgressWin
 
 ---@class TabycleConfigHistory
 ---@field max_size integer
@@ -69,6 +75,11 @@ M.defaults = {
 			height_ratio = 0.8,
 			border = "rounded",
 			col_gap = 2,
+		},
+		progress_win = {
+			row = 0,
+			col = 0,
+			border = "rounded",
 		},
 	},
 	history = {

@@ -115,15 +115,20 @@ end
 local function show_cycle_progress()
 	local frame_count = #progress_frames
 	local progress_buf = vim.api.nvim_create_buf(false, true)
+	local progress_config = config.options.cycle.progress_win
+	local width = #progress_frames[1]
+	local height = 1
+	local row = window.resolve_position(progress_config.row, vim.o.lines, height)
+	local col = window.resolve_position(progress_config.col, vim.o.columns, width)
 	store.cycle_progress_win = vim.api.nvim_open_win(progress_buf, false, {
 		relative = "editor",
-		width = #progress_frames[1],
-		height = 1,
-		row = 0,
-		col = 0,
+		width = width,
+		height = height,
+		row = row,
+		col = col,
 		style = "minimal",
 		focusable = false,
-		border = config.options.cycle.win.border,
+		border = progress_config.border,
 	})
 
 	local interval = math.floor(config.options.cycle.settle_ms / frame_count)
