@@ -12,6 +12,9 @@ local augroup = vim.api.nvim_create_augroup("Tabycle", { clear = true })
 ---@type function | nil
 local sync_ui = nil
 
+---@type function | nil
+local close_sync_ui = nil
+
 ---@param bufnr integer
 ---@return boolean
 local function should_fire_event(bufnr)
@@ -19,7 +22,11 @@ local function should_fire_event(bufnr)
 end
 
 function M.init()
-	sync_ui = debounce.debounce(function()
+	if close_sync_ui ~= nil then
+		close_sync_ui()
+	end
+
+	sync_ui, close_sync_ui = debounce.debounce(function()
 		local list = buffer_summary.sync()
 		buffer_list.sync(list)
 	end, config.options.debounce_ms)
