@@ -58,6 +58,16 @@ local function open_buf(bufnr)
 	end
 end
 
+---@param bufnr integer
+---@param split_cmd string
+local function open_buf_split(bufnr, split_cmd)
+	if working_win ~= nil then
+		vim.api.nvim_set_current_win(working_win)
+	end
+	vim.cmd(split_cmd)
+	vim.api.nvim_win_set_buf(0, bufnr)
+end
+
 ---@param tab_list TabItem[]
 ---@return TabItem
 local function get_selecting_tab(tab_list)
@@ -225,6 +235,16 @@ local function show_cycle_list(buffer_list, tab_list, target_buf)
 		local selected_tab = get_selecting_tab(tab_list)
 		M.close()
 		open_buf(selected_tab.bufnr)
+	end, { buffer = buffer_list.bufnr, noremap = true, silent = true })
+	vim.keymap.set("n", keymaps.open_split, function()
+		local selected_tab = get_selecting_tab(tab_list)
+		M.close()
+		open_buf_split(selected_tab.bufnr, "split")
+	end, { buffer = buffer_list.bufnr, noremap = true, silent = true })
+	vim.keymap.set("n", keymaps.open_vsplit, function()
+		local selected_tab = get_selecting_tab(tab_list)
+		M.close()
+		open_buf_split(selected_tab.bufnr, "vsplit")
 	end, { buffer = buffer_list.bufnr, noremap = true, silent = true })
 
 	vim.api.nvim_create_autocmd({ "CursorMoved" }, {

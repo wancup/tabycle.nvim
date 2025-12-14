@@ -3,6 +3,8 @@ local M = {}
 ---@class TabycleConfigCycleKeymaps
 ---@field close string
 ---@field open string
+---@field open_split string
+---@field open_vsplit string
 
 ---@class TabycleConfigCycleWin
 ---@field width_ratio number
@@ -59,6 +61,8 @@ M.defaults = {
 		keymaps = {
 			close = "q",
 			open = "<cr>",
+			open_split = "<c-s>",
+			open_vsplit = "<c-v>",
 		},
 		win = {
 			width_ratio = 0.8,
