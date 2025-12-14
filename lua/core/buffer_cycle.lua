@@ -263,7 +263,7 @@ local function cycle_buffer(direction)
 			end
 			close_cycle_progress()
 
-			-- Since ignoring on BufEnter autocmd, manullay push
+			-- Since ignoring on BufEnter autocmd, manually push
 			tab.push_history(target_buf)
 		end, config.options.cycle.auto_confirm_ms)
 		show_cycle_progress()

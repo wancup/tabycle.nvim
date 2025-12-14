@@ -18,14 +18,14 @@ M.cycle_progress_win = nil
 ---@param bufnr integer
 ---@return boolean
 function M.is_own_buf(bufnr)
-	local fin_fields = {
+	local win_fields = {
 		"buffer_list_win",
 		"buffer_summary_win",
 		"cycle_list_win",
 		"cycle_preview_win",
 		"cycle_progress_win",
 	}
-	for _, field in pairs(fin_fields) do
+	for _, field in pairs(win_fields) do
 		local win = M[field]
 		if win == nil then
 			goto continue
