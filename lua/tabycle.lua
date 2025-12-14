@@ -1,5 +1,6 @@
 local config = require("core.config")
 local autocmd = require("core.autocmd")
+local command = require("core.command")
 local buffer_summary = require("core.buffer_summary")
 local buffer_list = require("core.buffer_list")
 local buffer_cycle = require("core.buffer_cycle")
@@ -42,6 +43,7 @@ end
 function M.setup(opts)
 	config.init(opts)
 	autocmd.init()
+	command.init(M)
 
 	vim.schedule(function()
 		if config.options.summary.enabled then
