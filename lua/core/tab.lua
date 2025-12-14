@@ -151,8 +151,7 @@ end
 
 ---@return TabItem[]
 function M.get_recency_list()
-	local _list = M.get_list()
-	local tab_list = vim.deepcopy(_list)
+	local tab_list = M.get_list()
 	sort_by_recency(tab_list)
 	return tab_list
 end
