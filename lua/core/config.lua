@@ -1,11 +1,16 @@
 local M = {}
 
+---@class TabycleConfigCycleKeymaps
+---@field close string
+---@field open string
+
 ---@class TabycleConfigCycle
 ---@field width_ratio number
 ---@field height_ratio number
 ---@field auto_confirm_ms integer
 ---@field border string
 ---@field win_gap integer
+---@field keymaps TabycleConfigCycleKeymaps
 
 ---@class TabycleConfigHistory
 ---@field max_size integer
@@ -44,6 +49,10 @@ M.defaults = {
 		auto_confirm_ms = 1000,
 		border = "rounded",
 		win_gap = 2,
+		keymaps = {
+			close = "q",
+			open = "<cr>",
+		},
 	},
 	history = {
 		max_size = 100,
