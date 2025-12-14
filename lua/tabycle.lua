@@ -44,8 +44,12 @@ function M.setup(opts)
 	autocmd.init()
 
 	vim.schedule(function()
-		M.show_summary()
-		M.show_list()
+		if config.options.summary.enabled then
+			M.show_summary()
+		end
+		if config.options.list.enabled then
+			M.show_list()
+		end
 	end)
 end
 

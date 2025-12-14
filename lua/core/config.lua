@@ -17,12 +17,14 @@ local M = {}
 ---@field col TabyclePositionValue
 
 ---@class TabycleConfigSummary
+---@field enabled boolean
 ---@field position TabycleConfigPosition
 ---@field border string
 ---@field cursor_icon string
 ---@field modified_icon string
 
 ---@class TabycleConfigList
+---@field enabled boolean
 ---@field position TabycleConfigPosition
 ---@field border string
 ---@field cursor_icon string
@@ -47,12 +49,14 @@ M.defaults = {
 		max_size = 100,
 	},
 	summary = {
+		enabled = true,
 		position = { row = 2, col = -1 },
 		border = "none",
 		modified_icon = "*",
 		cursor_icon = "^",
 	},
 	list = {
+		enabled = true,
 		position = { row = -3, col = -3 },
 		border = "rounded",
 		cursor_icon = ">",
