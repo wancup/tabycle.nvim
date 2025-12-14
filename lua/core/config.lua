@@ -56,7 +56,7 @@ M.defaults = {
 		cursor_icon = "^",
 	},
 	list = {
-		enabled = true,
+		enabled = false,
 		position = { row = -3, col = -3 },
 		border = "rounded",
 		cursor_icon = ">",
