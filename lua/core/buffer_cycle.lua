@@ -116,7 +116,7 @@ local function show_cycle_progress()
 		border = config.options.cycle.border,
 	})
 
-	local interval = math.floor(config.options.cycle.auto_confirm_ms / frame_count)
+	local interval = math.floor(config.options.cycle.settle_ms / frame_count)
 	local timer, err = vim.uv.new_timer()
 	if timer == nil then
 		error(err)
@@ -265,7 +265,7 @@ local function cycle_buffer(direction)
 
 			-- Since ignoring on BufEnter autocmd, manually push
 			tab.push_history(target_buf)
-		end, config.options.cycle.auto_confirm_ms)
+		end, config.options.cycle.settle_ms)
 		show_cycle_progress()
 	else
 		close_cycle_progress()

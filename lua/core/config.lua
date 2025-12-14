@@ -7,7 +7,7 @@ local M = {}
 ---@class TabycleConfigCycle
 ---@field width_ratio number
 ---@field height_ratio number
----@field auto_confirm_ms integer
+---@field settle_ms integer
 ---@field border string
 ---@field win_gap integer
 ---@field keymaps TabycleConfigCycleKeymaps
@@ -46,7 +46,7 @@ M.defaults = {
 	cycle = {
 		width_ratio = 0.8,
 		height_ratio = 0.8,
-		auto_confirm_ms = 1000,
+		settle_ms = 1000,
 		border = "rounded",
 		win_gap = 2,
 		keymaps = {
