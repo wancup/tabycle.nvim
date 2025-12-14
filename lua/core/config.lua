@@ -79,7 +79,7 @@ M.defaults = {
 		modified_icon = "*",
 		cursor_icon = "^",
 		win = {
-			row = 2,
+			row = 0,
 			col = -1,
 			border = "none",
 		},
