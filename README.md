@@ -148,7 +148,7 @@ require("tabycle").setup({
 
 ## Visual Indicators
 
-### Buffer Summary
+### Buffer Summary Indicators
 
 The summary displays a compact row of icons representing each buffer:
 
@@ -160,7 +160,7 @@ The summary displays a compact row of icons representing each buffer:
 - `*` - Modified buffer (overrides diagnostic icon)
 - `^` - Current buffer indicator (shown below the icons)
 
-### Buffer List
+### Buffer List Indicators
 
 Each buffer entry shows:
 
