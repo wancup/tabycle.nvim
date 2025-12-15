@@ -160,8 +160,6 @@ The summary displays a compact row of icons representing each buffer:
 - `*` - Modified buffer (overrides diagnostic icon)
 - `^` - Current buffer indicator (shown below the icons)
 
-- 
-
 ### Buffer List
 
 Each buffer entry shows:
