@@ -11,6 +11,20 @@ A Neovim plugin for intelligent buffer cycling with recency-based ordering, visu
 - **Buffer Summary**: A compact, always-visible indicator showing all open buffers with diagnostic status
 - **Buffer List**: A detailed floating window displaying buffer names with modification and diagnostic markers
 
+### Buffer Cycling
+
+https://github.com/user-attachments/assets/9c496da5-2c7c-4ba7-9dc7-b8afba0cab83
+
+### Buffer Summary
+
+https://github.com/user-attachments/assets/58dcac0a-40f3-4bec-8d71-d50aee6abc8f
+
+Look at the upper right small window.
+
+### Buffer List
+
+https://github.com/user-attachments/assets/29655f63-f1e4-4005-bdd4-32a0d26ba8f7
+
 ## Installation
 
 Using [lazy.nvim](https://github.com/folke/lazy.nvim):
@@ -145,6 +159,8 @@ The summary displays a compact row of icons representing each buffer:
 - `H` - Hint
 - `*` - Modified buffer (overrides diagnostic icon)
 - `^` - Current buffer indicator (shown below the icons)
+
+- 
 
 ### Buffer List
 
