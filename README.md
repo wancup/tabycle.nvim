@@ -34,8 +34,8 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
   "wancup/tabycle.nvim",
   event = "VeryLazy",
   keys = {
-    { "<S-Tab>", "<cmd>Tabycle cycle back<cr>", desc = "Cycle to previous buffer" },
-    { "<Tab>", "<cmd>Tabycle cycle forward<cr>", desc = "Cycle to next buffer" },
+    { "<C-Tab>", "<cmd>Tabycle cycle back<cr>", desc = "Cycle to previous buffer" },
+    { "<C-S-Tab>", "<cmd>Tabycle cycle forward<cr>", desc = "Cycle to next buffer" },
     { "<leader>bs", "<cmd>Tabycle summary toggle<cr>", desc = "Toggle buffer summary" },
     { "<leader>bl", "<cmd>Tabycle list toggle<cr>", desc = "Toggle buffer list" },
   },
